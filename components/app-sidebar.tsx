@@ -26,12 +26,33 @@ const navigation = [
   { name: es.nav.ajustes, href: "/app/ajustes", icon: Settings },
 ]
 
-export function AppSidebar() {
+type AppSidebarProps = {
+  isOpen?: boolean
+  onClose?: () => void
+}
+
+export function AppSidebar({ isOpen = false, onClose }: AppSidebarProps) {
   const pathname = usePathname()
 
   return (
-    <aside className="flex flex-col w-64 border-r bg-card min-h-screen">
-      <nav className="flex-1 space-y-1 p-4">
+    <aside
+      className={cn(
+        "fixed inset-y-0 left-0 z-50 w-64 bg-card border-r shadow-sm transition-transform duration-200 lg:static lg:z-0 lg:translate-x-0 lg:flex",
+        isOpen ? "translate-x-0" : "-translate-x-full",
+      )}
+    >
+      <div className="flex flex-col h-full">
+        <div className="flex items-center justify-between px-4 py-3 lg:hidden border-b">
+          <span className="font-semibold text-sm text-foreground">{es.nav.dashboard}</span>
+          <button
+            type="button"
+            className="text-sm text-muted-foreground hover:text-foreground"
+            onClick={onClose}
+          >
+            Cerrar
+          </button>
+        </div>
+        <nav className="flex-1 space-y-1 p-4 overflow-y-auto">
         {navigation.map((item) => {
           const isActive = pathname.startsWith(item.href)
           return (
@@ -50,7 +71,8 @@ export function AppSidebar() {
             </Link>
           )
         })}
-      </nav>
+        </nav>
+      </div>
     </aside>
   )
 }

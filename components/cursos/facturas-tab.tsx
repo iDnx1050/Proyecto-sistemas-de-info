@@ -12,6 +12,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { apiSimulada } from "@/lib/mock"
 import type { Factura } from "@/lib/types"
 import { format } from "date-fns"
@@ -23,8 +24,11 @@ const facturaSchema = z.object({
   fileName: z.string().min(1, "Archivo requerido"),
   fileType: z.enum(["pdf", "jpg"]),
   proveedor: z.string().min(1, "Proveedor requerido"),
-  montoCLP: z.number().min(0, "Monto inválido"),
+  montoCLP: z.number().min(0, "Monto invalido"),
   fechaEmisionISO: z.string().min(1, "Fecha requerida"),
+  categoria: z.enum(["alimentacion", "logistica", "indumentaria", "materiales", "servicios", "otro"], {
+    required_error: "Categoria requerida",
+  }),
   etiquetas: z.string().optional(),
 })
 
@@ -48,6 +52,7 @@ export function FacturasTab({ cursoId, onRefresh }: FacturasTabProps) {
     handleSubmit,
     setValue,
     reset,
+    watch,
     formState: { errors },
   } = useForm<FacturaFormData>({
     resolver: zodResolver(facturaSchema),
@@ -55,11 +60,14 @@ export function FacturasTab({ cursoId, onRefresh }: FacturasTabProps) {
       proveedor: "",
       montoCLP: 0,
       fechaEmisionISO: "",
+      categoria: "otro",
       etiquetas: "",
       fileName: "",
       fileType: "pdf",
     },
   })
+
+  const categoriaSeleccionada = watch("categoria")
 
   const fileDisplay = useMemo(() => {
     if (!selectedFile) return null
@@ -102,6 +110,7 @@ export function FacturasTab({ cursoId, onRefresh }: FacturasTabProps) {
         proveedor: data.proveedor,
         montoCLP: data.montoCLP,
         fechaEmisionISO: new Date(data.fechaEmisionISO).toISOString(),
+        categoria: data.categoria,
         fileName: data.fileName || fallbackFileName,
         fileType: fallbackFileType,
         fileUrl,
@@ -150,7 +159,8 @@ export function FacturasTab({ cursoId, onRefresh }: FacturasTabProps) {
                   <TableHead>Archivo</TableHead>
                   <TableHead>Proveedor</TableHead>
                   <TableHead>Monto</TableHead>
-                  <TableHead>Fecha emisión</TableHead>
+                  <TableHead>Categoria</TableHead>
+                  <TableHead>Fecha emision</TableHead>
                   <TableHead>Etiquetas</TableHead>
                   <TableHead></TableHead>
                 </TableRow>
@@ -166,6 +176,9 @@ export function FacturasTab({ cursoId, onRefresh }: FacturasTabProps) {
                     </TableCell>
                     <TableCell>{factura.proveedor}</TableCell>
                     <TableCell className="font-mono">${factura.montoCLP?.toLocaleString("es-CL") || "-"}</TableCell>
+                    <TableCell>
+                      {es.dashboard.invoiceRegistry.categories[factura.categoria] || factura.categoria}
+                    </TableCell>
                     <TableCell>
                       {format(new Date(factura.fechaEmisionISO), "dd MMM yyyy", { locale: dateFnsEs })}
                     </TableCell>
@@ -232,7 +245,7 @@ export function FacturasTab({ cursoId, onRefresh }: FacturasTabProps) {
               {errors.proveedor && <p className="text-xs text-destructive">{errors.proveedor.message}</p>}
             </div>
 
-            <div className="grid gap-4 md:grid-cols-2">
+            <div className="grid gap-4 md:grid-cols-3">
               <div className="space-y-2">
                 <Label htmlFor="montoCLP">Monto (CLP) *</Label>
                 <Input
@@ -245,9 +258,30 @@ export function FacturasTab({ cursoId, onRefresh }: FacturasTabProps) {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="fechaEmisionISO">Fecha de emisión *</Label>
+                <Label htmlFor="fechaEmisionISO">Fecha de emision *</Label>
                 <Input id="fechaEmisionISO" type="date" {...register("fechaEmisionISO")} />
                 {errors.fechaEmisionISO && <p className="text-xs text-destructive">{errors.fechaEmisionISO.message}</p>}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="categoria">Categoría del gasto *</Label>
+                <Select
+                  value={categoriaSeleccionada}
+                  onValueChange={(valor) => setValue("categoria", valor as Factura["categoria"], { shouldValidate: true })}
+                >
+                  <SelectTrigger id="categoria">
+                    <SelectValue placeholder="Seleccionar categoría" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="alimentacion">{es.dashboard.invoiceRegistry.categories.alimentacion}</SelectItem>
+                    <SelectItem value="logistica">{es.dashboard.invoiceRegistry.categories.logistica}</SelectItem>
+                    <SelectItem value="indumentaria">{es.dashboard.invoiceRegistry.categories.indumentaria}</SelectItem>
+                    <SelectItem value="materiales">{es.dashboard.invoiceRegistry.categories.materiales}</SelectItem>
+                    <SelectItem value="servicios">{es.dashboard.invoiceRegistry.categories.servicios}</SelectItem>
+                    <SelectItem value="otro">{es.dashboard.invoiceRegistry.categories.otro}</SelectItem>
+                  </SelectContent>
+                </Select>
+                {errors.categoria && <p className="text-xs text-destructive">{errors.categoria.message}</p>}
               </div>
             </div>
 

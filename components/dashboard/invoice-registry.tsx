@@ -247,9 +247,9 @@ export function InvoiceRegistry({ mostrarBotonVerTodas = false, mostrarFormulari
           </form>
         )}
 
-        <div className="flex items-end justify-end gap-3">
+        <div className="flex items-end justify-start gap-3">
           <div className="space-y-2 w-full sm:w-auto">
-            <Label htmlFor="filtroFecha">Filtrar por fecha</Label>
+            <Label htmlFor="filtroFecha">Busqueda por fecha</Label>
             <div className="flex flex-wrap gap-2 sm:flex-nowrap">
               <Popover>
                 <PopoverTrigger asChild>

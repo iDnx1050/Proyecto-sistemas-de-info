@@ -72,6 +72,7 @@ export type Factura = {
   proveedor: string
   montoCLP: number
   fechaEmisionISO: string
+  categoria: "alimentacion" | "logistica" | "indumentaria" | "materiales" | "servicios" | "otro"
   fileName: string
   fileType: "pdf" | "jpg" | "png"
   fileUrl?: string

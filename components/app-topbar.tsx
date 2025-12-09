@@ -19,7 +19,11 @@ import { es } from "@/lib/i18n/es"
 import type { UserRole } from "@/lib/types"
 import { useUser } from "@/components/user-provider"
 
-export function AppTopbar() {
+type AppTopbarProps = {
+  onToggleSidebar?: () => void
+}
+
+export function AppTopbar({ onToggleSidebar }: AppTopbarProps) {
   const { user, updateUserProfile, logout } = useUser()
   const router = useRouter()
   const [currentRole, setCurrentRole] = useState<UserRole>(user.role)
@@ -69,7 +73,7 @@ export function AppTopbar() {
     <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="flex h-16 items-center gap-4 px-4 lg:px-6">
         {/* Mobile menu button */}
-        <Button variant="ghost" size="icon" className="lg:hidden">
+        <Button variant="ghost" size="icon" className="lg:hidden" onClick={onToggleSidebar}>
           <Menu className="w-5 h-5" />
         </Button>
 
