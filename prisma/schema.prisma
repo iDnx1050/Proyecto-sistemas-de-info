@@ -8,26 +8,26 @@ datasource db {
 }
 
 model Curso {
-  id                  String          @id @default(cuid())
-  nombre              String
-  tipo                String
-  fechaISO            DateTime
-  lugar               String
-  asistentes          Int
-  responsable         String
-  activo              Boolean         @default(true)
+  id                   String   @id @default(cuid())
+  nombre               String
+  tipo                 String
+  fechaISO             DateTime
+  lugar                String
+  asistentes           Int
+  responsable          String
+  activo               Boolean  @default(true)
   plantillaChecklistId String?
-  createdAt           DateTime        @default(now())
+  createdAt            DateTime @default(now())
 
-  checklistItems      ChecklistItem[]
-  participantes       Participante[]
-  facturas            Factura[]
+  checklistItems ChecklistItem[]
+  participantes  Participante[]
+  facturas       Factura[]
 }
 
 model ChecklistItem {
-  id                 String   @id @default(cuid())
+  id                 String  @id @default(cuid())
   cursoId            String
-  curso              Curso    @relation(fields: [cursoId], references: [id], onDelete: Cascade)
+  curso              Curso   @relation(fields: [cursoId], references: [id], onDelete: Cascade)
   sku                String?
   item               String
   unidad             String
@@ -39,41 +39,41 @@ model ChecklistItem {
 }
 
 model Inventario {
-  sku        String   @id
-  nombre     String
-  talla      String?
-  color      String?
-  stock      Int
-  stockMin   Int
-  ubicacion  String?
-  updatedAt  DateTime @default(now())
+  sku       String   @id
+  nombre    String
+  talla     String?
+  color     String?
+  stock     Int
+  stockMin  Int
+  ubicacion String?
+  updatedAt DateTime @default(now())
 
   movimientos Movimiento[]
 }
 
 model Movimiento {
-  id        String   @id @default(cuid())
-  fechaISO  DateTime
-  tipo      String
-  sku       String
-  cantidad  Int
+  id         String      @id @default(cuid())
+  fechaISO   DateTime
+  tipo       String
+  sku        String
+  cantidad   Int
   referencia String?
-  usuario   String
+  usuario    String
   inventario Inventario? @relation(fields: [sku], references: [sku], onDelete: Cascade)
 }
 
 model Participante {
-  id         String  @id @default(cuid())
-  cursoId    String
-  curso      Curso   @relation(fields: [cursoId], references: [id], onDelete: Cascade)
-  nombre     String
-  alergias   String?
+  id          String   @id @default(cuid())
+  cursoId     String
+  curso       Curso    @relation(fields: [cursoId], references: [id], onDelete: Cascade)
+  nombre      String
+  alergias    String?
   tallaPolera String?
-  isVegan    Boolean?
+  isVegan     Boolean?
 }
 
 model Proveedor {
-  id        String   @id @default(cuid())
+  id        String    @id @default(cuid())
   nombre    String
   contacto  String?
   telefono  String?
@@ -84,22 +84,24 @@ model Proveedor {
 }
 
 model Factura {
-  id             String   @id @default(cuid())
-  cursoId        String?
-  curso          Curso?   @relation(fields: [cursoId], references: [id], onDelete: Cascade)
-  proveedor      String
-  montoCLP       Int
+  id              String   @id @default(cuid())
+  cursoId         String?
+  curso           Curso?   @relation(fields: [cursoId], references: [id], onDelete: Cascade)
+  proveedor       String
+  proveedorId     String?
+  proveedorRef    Proveedor? @relation(fields: [proveedorId], references: [id], onDelete: SetNull)
+  montoCLP        Int
   fechaEmisionISO DateTime
-  categoria      String
-  fileName       String
-  fileType       String
-  fileUrl        String?
-  etiquetas      String?
-  createdAtISO   DateTime @default(now())
+  categoria       String
+  fileName        String
+  fileType        String
+  fileUrl         String?
+  etiquetas       String?
+  createdAtISO    DateTime @default(now())
 }
 
 model PlantillaChecklist {
-  id    String @id @default(cuid())
+  id     String @id @default(cuid())
   nombre String
   tipo   String
   items  Json
