@@ -7,7 +7,7 @@ import "@/lib/chart-config"
 
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js"
 import { apiSimulada } from "@/lib/mock"
-import type { FacturaGeneral } from "@/lib/types"
+import type { Factura, FacturaGeneral } from "@/lib/types"
 
 ChartJS.register(ArcElement, Tooltip, Legend)
 
@@ -27,9 +27,28 @@ export function ConsumptionChart() {
   useEffect(() => {
     let activo = true
     const cargar = async () => {
-      const facturasGenerales = await apiSimulada.getFacturasGenerales()
+      const [facturasGenerales, facturasCursos] = await Promise.all([
+        apiSimulada.getFacturasGenerales(),
+        apiSimulada.getFacturas(),
+      ])
+      const unificadas: FacturaGeneral[] = [
+        ...facturasGenerales,
+        ...facturasCursos.map(
+          (f: Factura): FacturaGeneral => ({
+            id: f.id,
+            proveedor: f.proveedor,
+            montoCLP: f.montoCLP,
+            fechaEmisionISO: f.fechaEmisionISO,
+            categoria: f.categoria,
+            fileName: f.fileName,
+            fileType: f.fileType,
+            fileUrl: f.fileUrl,
+            createdAtISO: f.createdAtISO,
+          }),
+        ),
+      ]
       if (!activo) return
-      setFacturas(facturasGenerales)
+      setFacturas(unificadas)
       setCargando(false)
     }
 
@@ -52,9 +71,31 @@ export function ConsumptionChart() {
   useEffect(() => {
     const handler = (evt: Event) => {
       const detalle = (evt as CustomEvent).detail
-      if (detalle === "inventario" || detalle === "movimientos") {
-        // en demo, los movimientos se recalculan desde facturas generales también
-        apiSimulada.getFacturasGenerales().then(setFacturas)
+      if (["facturas", "facturasGenerales", "inventario", "movimientos"].includes(detalle)) {
+        apiSimulada
+          .getFacturasGenerales()
+          .then((generales) =>
+            apiSimulada.getFacturas().then((cursos) => {
+              const unificadas: FacturaGeneral[] = [
+                ...generales,
+                ...cursos.map(
+                  (f: Factura): FacturaGeneral => ({
+                    id: f.id,
+                    proveedor: f.proveedor,
+                    montoCLP: f.montoCLP,
+                    fechaEmisionISO: f.fechaEmisionISO,
+                    categoria: f.categoria,
+                    fileName: f.fileName,
+                    fileType: f.fileType,
+                    fileUrl: f.fileUrl,
+                    createdAtISO: f.createdAtISO,
+                  }),
+                ),
+              ]
+              setFacturas(unificadas)
+            }),
+          )
+          .catch(() => {})
       }
     }
     window.addEventListener("demo-data-update", handler as EventListener)
