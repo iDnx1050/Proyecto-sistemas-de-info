@@ -6,7 +6,6 @@ import Link from "next/link"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Badge } from "@/components/ui/badge"
 import { KpiCard } from "@/components/dashboard/kpi-card"
-import { ExpenseChart } from "@/components/dashboard/expense-chart"
 import { ConsumptionChart } from "@/components/dashboard/consumption-chart"
 import { InvoiceRegistry } from "@/components/dashboard/invoice-registry"
 import { es } from "@/lib/i18n/es"
@@ -228,9 +227,12 @@ export default function DashboardPage() {
         />
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2">
-        <ExpenseChart />
-        <ConsumptionChart />
+      <div className="grid gap-6">
+        <div className="flex justify-center">
+          <div className="w-full lg:w-3/4">
+            <ConsumptionChart />
+          </div>
+        </div>
       </div>
 
       <div className="grid gap-6">

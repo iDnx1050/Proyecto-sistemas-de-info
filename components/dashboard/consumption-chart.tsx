@@ -2,20 +2,20 @@
 
 import { useEffect, useMemo, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Doughnut } from "react-chartjs-2"
+import { Bar } from "react-chartjs-2"
 import "@/lib/chart-config"
 
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js"
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Tooltip, Legend } from "chart.js"
 import { apiSimulada } from "@/lib/mock"
 import type { Factura, FacturaGeneral } from "@/lib/types"
 
-ChartJS.register(ArcElement, Tooltip, Legend)
+ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend)
 
 const categorias = [
   { key: "alimentacion", label: "Alimentación", color: "#16A34A" },
   { key: "logistica", label: "Logística", color: "#1E3A5F" },
   { key: "indumentaria", label: "Indumentaria", color: "#3B7C7C" },
-  { key: "materiales", label: "Material educativo", color: "#D9A441" },
+  { key: "materiales", label: "Materiales", color: "#D9A441" },
   { key: "servicios", label: "Servicios", color: "#D97706" },
   { key: "otro", label: "Otros", color: "#10B981" },
 ]
@@ -120,9 +120,10 @@ export function ConsumptionChart() {
       labels: categorias.map((c) => c.label),
       datasets: [
         {
+          label: "Gasto (CLP)",
           data: categorias.map((c) => totales[c.key] || 0),
           backgroundColor: categorias.map((c) => c.color),
-          borderWidth: 0,
+          borderRadius: 8,
         },
       ],
     }
@@ -137,29 +138,23 @@ export function ConsumptionChart() {
     plugins: {
       legend: {
         position: "bottom" as const,
-        labels: {
-          padding: 16,
-          usePointStyle: true,
-          font: {
-            size: 12,
-          },
-        },
+        labels: { usePointStyle: true, padding: 12 },
       },
       tooltip: {
-        backgroundColor: "#f8fafc",
-        titleColor: "#0f172a",
-        bodyColor: "#0f172a",
-        borderColor: "#cbd5e1",
-        borderWidth: 1,
-        padding: 12,
         callbacks: {
-          label: (context: any) => {
-            const valor = context.parsed
-            const total = context.dataset.data.reduce((acc: number, v: number) => acc + v, 0)
-            const porcentaje = total ? Math.round((valor / total) * 100) : 0
-            return `${context.label}: $${valor.toLocaleString("es-CL")} (${porcentaje}%)`
-          },
+          label: (context: any) => `$${context.parsed.y.toLocaleString("es-CL")}`,
         },
+      },
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        ticks: {
+          callback: (value: any) => `$${Number(value).toLocaleString("es-CL")}`,
+        },
+      },
+      x: {
+        grid: { display: false },
       },
     },
   }
@@ -174,7 +169,7 @@ export function ConsumptionChart() {
           {cargando ? (
             <p className="text-sm text-muted-foreground">Cargando datos...</p>
           ) : tieneDatos && datos ? (
-            <Doughnut data={datos} options={opciones} />
+            <Bar data={datos} options={opciones} />
           ) : (
             <div className="text-sm text-muted-foreground">
               Aún no hay facturas registradas para mostrar en el gráfico.

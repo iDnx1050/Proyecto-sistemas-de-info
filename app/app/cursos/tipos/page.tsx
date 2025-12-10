@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import type React from "react"
 import { useEffect, useMemo, useState } from "react"
@@ -162,15 +162,6 @@ export default function TiposCursoPage() {
   }
 
   const handleDelete = (tipo: PlantillaChecklist) => {
-    const enUso = cursos.some((c) => c.plantillaChecklistId === tipo.id)
-    if (enUso) {
-      toast({
-        title: "No se puede eliminar",
-        description: "Este tipo está asignado a un curso y no puede borrarse.",
-        variant: "destructive",
-      })
-      return
-    }
     setTipos((prev) => {
       const next = prev.filter((t) => t.id !== tipo.id)
       if (typeof window !== "undefined") {
@@ -194,10 +185,6 @@ export default function TiposCursoPage() {
           <h1 className="text-3xl font-bold tracking-tight">Tipos de curso</h1>
           <p className="text-muted-foreground">Define nuevas plantillas de cursos con su checklist asociado.</p>
         </div>
-        <Badge variant="secondary" className="gap-1">
-          <Sparkles className="w-4 h-4" />
-          Demo sin backend
-        </Badge>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[420px,1fr]">
@@ -249,7 +236,7 @@ export default function TiposCursoPage() {
                           </SelectLabel>
                           {inventario.map((inv) => (
                             <SelectItem key={inv.sku} value={inv.sku}>
-                              {inv.nombre} — {inv.sku} (Stock: {inv.stock})
+                              {inv.nombre} · {inv.sku} (Stock: {inv.stock})
                             </SelectItem>
                           ))}
                         </SelectGroup>
@@ -330,7 +317,6 @@ export default function TiposCursoPage() {
               <div className="space-y-4">
                 {tipos.map((tipo) => {
                   const esLocal = tipo.id.startsWith("PL-LOCAL-")
-                  const enUso = cursos.some((c) => c.plantillaChecklistId === tipo.id)
                   return (
                     <div key={tipo.id} className="rounded-lg border p-4 space-y-2 bg-card/50">
                       <div className="flex items-center justify-between gap-3 flex-wrap">
@@ -355,9 +341,9 @@ export default function TiposCursoPage() {
                             variant="ghost"
                             size="icon"
                             onClick={() => handleDelete(tipo)}
-                            title={enUso ? "Tipo en uso" : "Eliminar tipo"}
+                            title="Eliminar tipo"
                             className="text-destructive"
-                            disabled={!esLocal && !enUso ? false : enUso || !esLocal}
+                            disabled={!esLocal}
                           >
                             <Trash2 className="w-4 h-4" />
                           </Button>
@@ -370,8 +356,8 @@ export default function TiposCursoPage() {
                             <div key={idx} className="flex items-center gap-2 text-sm text-muted-foreground">
                               <span className="h-1.5 w-1.5 rounded-full bg-primary" />
                               <span className="font-medium text-foreground">{item.item}</span>
-                              <span className="text-xs">• {item.unidad}</span>
-                              <span className="text-xs">• x{item.cantidadPorPersona}</span>
+                              <span className="text-xs">· {item.unidad}</span>
+                              <span className="text-xs">· x{item.cantidadPorPersona}</span>
                               {item.sku && <Badge variant="outline">SKU: {item.sku}</Badge>}
                             </div>
                           ))}
