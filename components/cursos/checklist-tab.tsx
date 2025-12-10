@@ -40,6 +40,14 @@ export function ChecklistTab({ cursoId, curso, onRefresh }: ChecklistTabProps) {
 
   useEffect(() => {
     loadItems()
+    const handler = (evt: Event) => {
+      const detalle = (evt as CustomEvent).detail
+      if (detalle === "checklistItems") {
+        loadItems()
+      }
+    }
+    window.addEventListener("demo-data-update", handler as EventListener)
+    return () => window.removeEventListener("demo-data-update", handler as EventListener)
   }, [cursoId])
 
   const handleUpdateEstado = async (itemId: string, nuevoEstado: ChecklistItem["estado"]) => {

@@ -25,12 +25,40 @@ export function ConsumptionChart() {
   const [cargando, setCargando] = useState(true)
 
   useEffect(() => {
-    async function cargar() {
+    let activo = true
+    const cargar = async () => {
       const facturasGenerales = await apiSimulada.getFacturasGenerales()
+      if (!activo) return
       setFacturas(facturasGenerales)
       setCargando(false)
     }
+
     cargar()
+
+    const handler = (evt: Event) => {
+      const detalle = (evt as CustomEvent).detail
+      if (detalle === "facturasGenerales") {
+        cargar()
+      }
+    }
+    window.addEventListener("demo-data-update", handler as EventListener)
+
+    return () => {
+      activo = false
+      window.removeEventListener("demo-data-update", handler as EventListener)
+    }
+  }, [])
+
+  useEffect(() => {
+    const handler = (evt: Event) => {
+      const detalle = (evt as CustomEvent).detail
+      if (detalle === "inventario" || detalle === "movimientos") {
+        // en demo, los movimientos se recalculan desde facturas generales también
+        apiSimulada.getFacturasGenerales().then(setFacturas)
+      }
+    }
+    window.addEventListener("demo-data-update", handler as EventListener)
+    return () => window.removeEventListener("demo-data-update", handler as EventListener)
   }, [])
 
   const { datos, tieneDatos } = useMemo(() => {

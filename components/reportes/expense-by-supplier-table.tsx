@@ -28,6 +28,14 @@ export function ExpenseBySupplierTable() {
       setLoading(false)
     }
     load()
+    const handler = (evt: Event) => {
+      const detalle = (evt as CustomEvent).detail
+      if (detalle === "facturas" || detalle === "facturasGenerales") {
+        load()
+      }
+    }
+    window.addEventListener("demo-data-update", handler as EventListener)
+    return () => window.removeEventListener("demo-data-update", handler as EventListener)
   }, [])
 
   const data = useMemo<TotalesProveedor[]>(() => {

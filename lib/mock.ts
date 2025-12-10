@@ -13,6 +13,23 @@ import type {
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE || ""
 const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE === "true" || !API_BASE
 
+const emitUpdate = (topic: string) => {
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new CustomEvent("demo-data-update", { detail: topic }))
+  }
+}
+
+const loadLocalPlantillas = (): PlantillaChecklist[] => {
+  if (typeof window === "undefined") return []
+  const saved = window.localStorage.getItem("demo-course-types")
+  if (!saved) return []
+  try {
+    return JSON.parse(saved) as PlantillaChecklist[]
+  } catch {
+    return []
+  }
+}
+
 const uid = () =>
   typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : `id-${Math.random().toString(16).slice(2)}`
 
@@ -110,6 +127,14 @@ export const apiSimulada = {
     if (DEMO_MODE) {
       const nuevo: Curso = { ...curso, id: uid(), createdAtISO: new Date().toISOString() }
       store.cursos.unshift(nuevo)
+      if (nuevo.plantillaChecklistId && nuevo.asistentes) {
+        try {
+          await this.generateChecklistFromTemplate(nuevo.id, nuevo.plantillaChecklistId, nuevo.asistentes)
+          emitUpdate("checklistItems")
+        } catch {
+          // ignore in demo if falla
+        }
+      }
       return nuevo
     }
     return apiFetch<Curso>("/api/cursos", { method: "POST", body: JSON.stringify(curso) })
@@ -137,17 +162,17 @@ export const apiSimulada = {
 
   // Plantillas
   async getPlantillas(): Promise<PlantillaChecklist[]> {
-    if (DEMO_MODE) return [...store.plantillas]
+    if (DEMO_MODE) return [...store.plantillas, ...loadLocalPlantillas()]
     return apiFetch<PlantillaChecklist[]>("/api/plantillas")
   },
   async getPlantilla(id: string): Promise<PlantillaChecklist | null> {
-    if (DEMO_MODE) return store.plantillas.find((p) => p.id === id) || null
+    if (DEMO_MODE) return [...store.plantillas, ...loadLocalPlantillas()].find((p) => p.id === id) || null
     return apiFetch<PlantillaChecklist>(`/api/plantillas/${id}`).catch(() => null)
   },
 
   async generateChecklistFromTemplate(cursoId: string, plantillaId: string, asistentes: number) {
     if (DEMO_MODE) {
-      const plantilla = store.plantillas.find((p) => p.id === plantillaId)
+      const plantilla = [...store.plantillas, ...loadLocalPlantillas()].find((p) => p.id === plantillaId)
       if (!plantilla) throw new Error("Plantilla no encontrada")
       const created = plantilla.items.map<ChecklistItem>((item) => ({
         id: uid(),
@@ -212,6 +237,17 @@ export const apiSimulada = {
     if (DEMO_MODE) {
       const nuevo: Inventario = { ...item, updatedAtISO: new Date().toISOString() }
       store.inventario.push(nuevo)
+      store.movimientos.unshift({
+        id: uid(),
+        fechaISO: new Date().toISOString(),
+        tipo: "entrada",
+        sku: nuevo.sku,
+        cantidad: nuevo.stock,
+        referencia: "Alta de inventario",
+        usuario: "demo@ong.cl",
+      })
+      emitUpdate("inventario")
+      emitUpdate("movimientos")
       return nuevo
     }
     return apiFetch<Inventario>("/api/inventario", { method: "POST", body: JSON.stringify(item) })
@@ -221,6 +257,7 @@ export const apiSimulada = {
       const idx = store.inventario.findIndex((i) => i.sku === sku)
       if (idx === -1) return null
       store.inventario[idx] = { ...store.inventario[idx], ...updates, updatedAtISO: new Date().toISOString() }
+      emitUpdate("inventario")
       return store.inventario[idx]
     }
     return apiFetch<Inventario>(`/api/inventario/${sku}`, { method: "PUT", body: JSON.stringify(updates) }).catch(() => null)
@@ -228,6 +265,7 @@ export const apiSimulada = {
   async deleteInventarioItem(sku: string): Promise<boolean> {
     if (DEMO_MODE) {
       store.inventario = store.inventario.filter((i) => i.sku !== sku)
+      emitUpdate("inventario")
       return true
     }
     await apiFetch(`/api/inventario/${sku}`, { method: "DELETE" })
@@ -255,6 +293,8 @@ export const apiSimulada = {
         referencia,
         usuario: usuario || "demo@ong.cl",
       })
+      emitUpdate("inventario")
+      emitUpdate("movimientos")
       return { ok: true }
     }
     return apiFetch("/api/inventario/ajustar", {
@@ -332,6 +372,7 @@ export const apiSimulada = {
     if (DEMO_MODE) {
       const nueva: Factura = { ...factura, id: uid(), createdAtISO: new Date().toISOString() }
       store.facturas.unshift(nueva)
+      emitUpdate("facturas")
       return nueva
     }
     return apiFetch<Factura>("/api/facturas", { method: "POST", body: JSON.stringify(factura) })
@@ -339,6 +380,7 @@ export const apiSimulada = {
   async deleteFactura(id: string): Promise<boolean> {
     if (DEMO_MODE) {
       store.facturas = store.facturas.filter((f) => f.id !== id)
+      emitUpdate("facturas")
       return true
     }
     await apiFetch(`/api/facturas/${id}`, { method: "DELETE" })
@@ -354,6 +396,7 @@ export const apiSimulada = {
     if (DEMO_MODE) {
       const nueva: FacturaGeneral = { ...factura, id: uid(), createdAtISO: new Date().toISOString() }
       store.facturasGenerales.unshift(nueva)
+      emitUpdate("facturasGenerales")
       return nueva
     }
     return apiFetch<FacturaGeneral>("/api/facturas", { method: "POST", body: JSON.stringify(factura) })
@@ -361,6 +404,7 @@ export const apiSimulada = {
   async deleteFacturaGeneral(id: string): Promise<boolean> {
     if (DEMO_MODE) {
       store.facturasGenerales = store.facturasGenerales.filter((f) => f.id !== id)
+      emitUpdate("facturasGenerales")
       return true
     }
     await apiFetch(`/api/facturas-generales/${id}`, { method: "DELETE" })

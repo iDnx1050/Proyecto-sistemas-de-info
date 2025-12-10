@@ -32,13 +32,43 @@ export function ExpenseChart() {
   const [cargando, setCargando] = useState(true)
 
   useEffect(() => {
-    async function cargar() {
+    let activo = true
+    const cargar = async () => {
       const [facturasApi, cursosApi] = await Promise.all([apiSimulada.getFacturas(), apiSimulada.getCursos()])
+      if (!activo) return
       setFacturas(facturasApi)
       setCursos(cursosApi)
       setCargando(false)
     }
+
     cargar()
+
+    const handler = (evt: Event) => {
+      const detalle = (evt as CustomEvent).detail
+      if (detalle === "facturas") {
+        cargar()
+      }
+    }
+    window.addEventListener("demo-data-update", handler as EventListener)
+
+    return () => {
+      activo = false
+      window.removeEventListener("demo-data-update", handler as EventListener)
+    }
+  }, [])
+
+  useEffect(() => {
+    const handler = (evt: Event) => {
+      const detalle = (evt as CustomEvent).detail
+      if (detalle === "inventario" || detalle === "movimientos") {
+        Promise.all([apiSimulada.getFacturas(), apiSimulada.getCursos()]).then(([facturasApi, cursosApi]) => {
+          setFacturas(facturasApi)
+          setCursos(cursosApi)
+        })
+      }
+    }
+    window.addEventListener("demo-data-update", handler as EventListener)
+    return () => window.removeEventListener("demo-data-update", handler as EventListener)
   }, [])
 
   const { datos, tieneDatos } = useMemo(() => {

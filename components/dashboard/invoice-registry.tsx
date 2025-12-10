@@ -12,7 +12,7 @@ import { Badge } from "@/components/ui/badge"
 import { FileText, Download, Trash2, Upload } from "lucide-react"
 import { es } from "@/lib/i18n/es"
 import { apiSimulada } from "@/lib/mock"
-import type { FacturaGeneral } from "@/lib/types"
+import type { Factura, FacturaGeneral } from "@/lib/types"
 import { format } from "date-fns"
 import { es as dateFnsEs } from "date-fns/locale"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
@@ -43,10 +43,42 @@ export function InvoiceRegistry({ mostrarBotonVerTodas = false, mostrarFormulari
   const inputArchivoRef = useRef<HTMLInputElement | null>(null)
 
   useEffect(() => {
-    apiSimulada.getFacturasGenerales().then((lista) => {
-      setFacturas(lista)
-      setFacturasFiltradas(lista)
-    })
+    const cargar = async () => {
+      const [generales, porCurso] = await Promise.all([
+        apiSimulada.getFacturasGenerales(),
+        apiSimulada.getFacturas(),
+      ])
+      // unificamos: las facturas por curso se consideran también en el registro general
+      const merged: FacturaGeneral[] = [
+        ...generales,
+        ...porCurso.map(
+          (f: Factura): FacturaGeneral => ({
+            id: f.id,
+            fechaEmisionISO: f.fechaEmisionISO,
+            proveedor: f.proveedor,
+            montoCLP: f.montoCLP,
+            categoria: f.categoria,
+            fileName: f.fileName,
+            fileType: f.fileType,
+            fileUrl: f.fileUrl,
+            createdAtISO: f.createdAtISO,
+          }),
+        ),
+      ]
+      setFacturas(merged)
+      setFacturasFiltradas(merged)
+    }
+
+    cargar()
+
+    const handler = (evt: Event) => {
+      const detalle = (evt as CustomEvent).detail
+      if (detalle === "facturas" || detalle === "facturasGenerales") {
+        cargar()
+      }
+    }
+    window.addEventListener("demo-data-update", handler as EventListener)
+    return () => window.removeEventListener("demo-data-update", handler as EventListener)
   }, [])
 
   useEffect(() => {
