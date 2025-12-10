@@ -106,15 +106,12 @@ const store = {
     },
   ] as PlantillaChecklist[],
   inventario: [
-    { sku: "SKU-BOTI", nombre: "Botiquin basico", stock: 120, stockMin: 30, updatedAtISO: new Date().toISOString() },
-    { sku: "SKU-GUANTES", nombre: "Guantes nitrilo talla M", stock: 450, stockMin: 80, updatedAtISO: new Date().toISOString() },
-    { sku: "SKU-CHALECO", nombre: "Chaleco reflectante", stock: 18, stockMin: 20, talla: "M", color: "Amarillo", updatedAtISO: new Date().toISOString() }, // alerta
-    { sku: "SKU-CONOS", nombre: "Cono de seguridad", stock: 12, stockMin: 15, updatedAtISO: new Date().toISOString() }, // alerta
-    { sku: "SKU-LINTERNA", nombre: "Linterna LED recargable", stock: 25, stockMin: 5, updatedAtISO: new Date().toISOString() },
-    { sku: "SKU-MEGA", nombre: "Megafono 30W", stock: 6, stockMin: 2, updatedAtISO: new Date().toISOString() },
-    { sku: "SKU-CARPA", nombre: "Carpa plegable 3x3", stock: 5, stockMin: 1, updatedAtISO: new Date().toISOString() },
-    { sku: "SKU-MESA", nombre: "Mesa plegable plastica", stock: 15, stockMin: 3, updatedAtISO: new Date().toISOString() },
-    { sku: "SKU-SILLA", nombre: "Silla plegable", stock: 120, stockMin: 25, color: "Negro", updatedAtISO: new Date().toISOString() },
+    { sku: "SKU-BOTI", nombre: "Botiquin basico", stock: 120, stockMin: 30, ubicacion: "Bodega 1", updatedAtISO: new Date().toISOString() },
+    { sku: "SKU-GUANTES", nombre: "Guantes nitrilo talla M", stock: 450, stockMin: 80, ubicacion: "Bodega 1", updatedAtISO: new Date().toISOString() },
+    { sku: "SKU-CHALECO", nombre: "Chaleco reflectante", stock: 18, stockMin: 20, talla: "M", color: "Amarillo", ubicacion: "Bodega 2", updatedAtISO: new Date().toISOString() }, // alerta
+    { sku: "SKU-CONOS", nombre: "Cono de seguridad", stock: 12, stockMin: 15, ubicacion: "Bodega 2", updatedAtISO: new Date().toISOString() }, // alerta
+    { sku: "SKU-LINTERNA", nombre: "Linterna LED recargable", stock: 25, stockMin: 5, ubicacion: "Bodega 1", updatedAtISO: new Date().toISOString() },
+    { sku: "SKU-SILLA", nombre: "Silla plegable", stock: 120, stockMin: 25, color: "Negro", ubicacion: "Bodega 2", updatedAtISO: new Date().toISOString() },
   ] as Inventario[],
   movimientos: [
     {
