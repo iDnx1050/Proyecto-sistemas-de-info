@@ -116,7 +116,35 @@ const store = {
     { sku: "SKU-MESA", nombre: "Mesa plegable plastica", stock: 6, stockMin: 2, updatedAtISO: new Date().toISOString() },
     { sku: "SKU-SILLA", nombre: "Silla plegable", stock: 60, stockMin: 20, updatedAtISO: new Date().toISOString() },
   ] as Inventario[],
-  movimientos: [] as Movimiento[],
+  movimientos: [
+    {
+      id: "mov-001",
+      fechaISO: new Date().toISOString(),
+      tipo: "entrada",
+      sku: "SKU-BOTI",
+      cantidad: 20,
+      referencia: "Reposicion inicial",
+      usuario: "bodega@otek.cl",
+    },
+    {
+      id: "mov-002",
+      fechaISO: new Date().toISOString(),
+      tipo: "entrada",
+      sku: "SKU-CHALECO",
+      cantidad: 15,
+      referencia: "Compra para brigada",
+      usuario: "bodega@otek.cl",
+    },
+    {
+      id: "mov-003",
+      fechaISO: new Date().toISOString(),
+      tipo: "entrada",
+      sku: "SKU-SILLA",
+      cantidad: 40,
+      referencia: "Evento masivo",
+      usuario: "bodega@otek.cl",
+    },
+  ] as Movimiento[],
   checklistItems: [
     {
       id: "chk-demo",
@@ -130,8 +158,19 @@ const store = {
       estado: "pendiente",
     },
   ] as ChecklistItem[],
-  participantes: [{ id: "par-demo", cursoId: "cur-demo", nombre: "Participante demo" }] as Participante[],
-  proveedores: [{ id: "prov-demo", nombre: "Proveedor demo", contacto: "demo@proveedor.cl" }] as Proveedor[],
+  participantes: [
+    { id: "par-001", cursoId: "cur-primeros", nombre: "Lucía Andrade", alergias: "Nueces", tallaPolera: "M", isVegan: false },
+    { id: "par-002", cursoId: "cur-primeros", nombre: "Tomás Rivas", alergias: "", tallaPolera: "L", isVegan: true },
+    { id: "par-003", cursoId: "cur-evac", nombre: "Fernanda Soto", alergias: "Penicilina", tallaPolera: "S", isVegan: false },
+    { id: "par-004", cursoId: "cur-log", nombre: "Javier Paredes", alergias: "", tallaPolera: "XL", isVegan: false },
+    { id: "par-005", cursoId: "cur-evac", nombre: "Camila Muñoz", alergias: "", tallaPolera: "M", isVegan: true },
+  ] as Participante[],
+  proveedores: [
+    { id: "prov-001", nombre: "Sodexo Chile", contacto: "ventas@sodexo.cl", telefono: "+56 2 2345 6000", web: "https://cl.sodexo.com" },
+    { id: "prov-002", nombre: "Dimacofi", contacto: "contacto@dimacofi.cl", telefono: "+56 2 2798 8000", web: "https://www.dimacofi.cl" },
+    { id: "prov-003", nombre: "Berner Chile", contacto: "ventas@berner.cl", telefono: "+56 2 2594 8400", web: "https://www.berner.cl" },
+    { id: "prov-004", nombre: "La Polar Seguridad", contacto: "seguridad@lapolar.cl", telefono: "+56 2 2680 2000", web: "https://www.lapolar.cl" },
+  ] as Proveedor[],
   facturas: [
     {
       id: "fac-curso-001",
@@ -164,7 +203,7 @@ const store = {
       cursoId: "cur-log",
       proveedor: "Servicios Técnicos",
       montoCLP: 90000,
-      fechaImisionISO: new Date().toISOString(),
+      fechaEmisionISO: new Date().toISOString(),
       categoria: "servicios",
       fileName: "factura-servicios.pdf",
       fileType: "pdf",
