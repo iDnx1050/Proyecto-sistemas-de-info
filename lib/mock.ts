@@ -1,14 +1,3 @@
-import {
-  demoChecklistItems,
-  demoCursos,
-  demoFacturas,
-  demoFacturasGenerales,
-  demoInventario,
-  demoMovimientos,
-  demoParticipantes,
-  demoPlantillas,
-  demoProveedores,
-} from "./demo-data"
 import type {
   ChecklistItem,
   Curso,
@@ -27,16 +16,63 @@ const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE === "true" || !API_BASE
 const uid = () =>
   typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : `id-${Math.random().toString(16).slice(2)}`
 
+// Datos base minimalistas para que el usuario agregue los suyos.
 const store = {
-  cursos: [...demoCursos],
-  plantillas: [...demoPlantillas],
-  inventario: [...demoInventario],
-  movimientos: [...demoMovimientos],
-  checklistItems: [...demoChecklistItems],
-  participantes: [...demoParticipantes],
-  proveedores: [...demoProveedores],
-  facturas: [...demoFacturas],
-  facturasGenerales: [...demoFacturasGenerales],
+  cursos: [
+    {
+      id: "cur-demo",
+      nombre: "Curso demo",
+      tipo: "Primeros Auxilios" as Curso["tipo"],
+      fechaISO: new Date().toISOString(),
+      lugar: "Santiago",
+      asistentes: 1,
+      responsable: "Demo",
+      activo: true,
+      plantillaChecklistId: "tpl-demo",
+      createdAtISO: new Date().toISOString(),
+    },
+  ] as Curso[],
+  plantillas: [
+    {
+      id: "tpl-demo",
+      nombre: "Plantilla demo",
+      tipo: "Primeros Auxilios" as Curso["tipo"],
+      items: [
+        { item: "Botiquín", unidad: "unidad", cantidadPorPersona: 1, sku: "SKU-BOTI" },
+        { item: "Chaleco reflectante", unidad: "unidad", cantidadPorPersona: 1, sku: "SKU-CHALECO" },
+      ],
+    },
+  ] as PlantillaChecklist[],
+  inventario: [
+    { sku: "SKU-BOTI", nombre: "Botiquín básico", stock: 5, stockMin: 2, updatedAtISO: new Date().toISOString() },
+    {
+      sku: "SKU-CHALECO",
+      nombre: "Chaleco reflectante",
+      talla: "M",
+      color: "Amarillo",
+      stock: 4,
+      stockMin: 2,
+      updatedAtISO: new Date().toISOString(),
+    },
+  ] as Inventario[],
+  movimientos: [] as Movimiento[],
+  checklistItems: [
+    {
+      id: "chk-demo",
+      cursoId: "cur-demo",
+      sku: "SKU-BOTI",
+      item: "Botiquín",
+      unidad: "unidad",
+      qtyPlanificada: 1,
+      cantidadPorPersona: 1,
+      origen: "bodega",
+      estado: "pendiente",
+    },
+  ] as ChecklistItem[],
+  participantes: [{ id: "par-demo", cursoId: "cur-demo", nombre: "Participante demo" }] as Participante[],
+  proveedores: [{ id: "prov-demo", nombre: "Proveedor demo", contacto: "demo@proveedor.cl" }] as Proveedor[],
+  facturas: [] as Factura[],
+  facturasGenerales: [] as FacturaGeneral[],
 }
 
 async function apiFetch<T>(path: string, init: RequestInit = {}): Promise<T> {
