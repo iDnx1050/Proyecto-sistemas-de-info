@@ -126,36 +126,33 @@ export default function AjustesPage() {
       {/* Firebase Integration Info */}
       <Card>
         <CardHeader>
-          <CardTitle>Integración con Firebase</CardTitle>
-          <CardDescription>Información para conectar con backend real</CardDescription>
+          <CardTitle>Integración con SQLite</CardTitle>
+          <CardDescription>Información para conectar con backend real usando SQLite/Prisma</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="p-4 rounded-lg bg-muted space-y-2">
-            <p className="text-sm font-medium">Colecciones de Firestore sugeridas:</p>
+            <p className="text-sm font-medium">Tablas sugeridas:</p>
             <ul className="text-sm text-muted-foreground space-y-1 list-disc list-inside">
               <li>
-                <code className="text-xs bg-background px-1 py-0.5 rounded">cursos</code> - Datos de cursos
+                <code className="text-xs bg-background px-1 py-0.5 rounded">Curso</code> - Datos de cursos
               </li>
               <li>
-                <code className="text-xs bg-background px-1 py-0.5 rounded">checklist_items</code> - Items de checklists
+                <code className="text-xs bg-background px-1 py-0.5 rounded">ChecklistItem</code> - Items de checklists
               </li>
               <li>
-                <code className="text-xs bg-background px-1 py-0.5 rounded">inventario</code> - Stock de materiales
+                <code className="text-xs bg-background px-1 py-0.5 rounded">Inventario</code> - Stock de materiales
               </li>
               <li>
-                <code className="text-xs bg-background px-1 py-0.5 rounded">movimientos</code> - Historial de
-                movimientos
+                <code className="text-xs bg-background px-1 py-0.5 rounded">Movimiento</code> - Historial de movimientos
               </li>
               <li>
-                <code className="text-xs bg-background px-1 py-0.5 rounded">participantes</code> - Datos de
-                participantes
+                <code className="text-xs bg-background px-1 py-0.5 rounded">Participante</code> - Datos de participantes
               </li>
               <li>
-                <code className="text-xs bg-background px-1 py-0.5 rounded">proveedores</code> - Información de
-                proveedores
+                <code className="text-xs bg-background px-1 py-0.5 rounded">Proveedor</code> - Información de proveedores
               </li>
               <li>
-                <code className="text-xs bg-background px-1 py-0.5 rounded">facturas</code> - Facturas y documentos
+                <code className="text-xs bg-background px-1 py-0.5 rounded">Factura</code> - Facturas y documentos
               </li>
             </ul>
           </div>
@@ -164,8 +161,8 @@ export default function AjustesPage() {
             <p className="text-sm font-medium">Reemplazar mock API:</p>
             <p className="text-sm text-muted-foreground">
               Sustituir las funciones en <code className="text-xs bg-background px-1 py-0.5 rounded">lib/mock.ts</code>{" "}
-              con llamadas a Firebase usando{" "}
-              <code className="text-xs bg-background px-1 py-0.5 rounded">firebase/firestore</code>
+              con llamadas a SQLite mediante Prisma usando{" "}
+              <code className="text-xs bg-background px-1 py-0.5 rounded">@prisma/client</code>
             </p>
           </div>
         </CardContent>
