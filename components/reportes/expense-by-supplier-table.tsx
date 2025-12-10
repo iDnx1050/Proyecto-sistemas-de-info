@@ -7,7 +7,7 @@ import { Download } from "lucide-react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Input } from "@/components/ui/input"
 import { apiSimulada } from "@/lib/mock"
-import type { Factura } from "@/lib/types"
+import type { Factura, FacturaGeneral } from "@/lib/types"
 
 type TotalesProveedor = {
   proveedor: string
@@ -16,15 +16,16 @@ type TotalesProveedor = {
 }
 
 export function ExpenseBySupplierTable() {
-  const [facturas, setFacturas] = useState<Factura[]>([])
+  const [facturas, setFacturas] = useState<(Factura | FacturaGeneral)[]>([])
   const [loading, setLoading] = useState(true)
   const [monthFilter, setMonthFilter] = useState("") // yyyy-mm
 
   useEffect(() => {
     const load = async () => {
       setLoading(true)
-      const data = await apiSimulada.getFacturas()
-      setFacturas(data)
+      const [facturasCursos, facturasGenerales] = await Promise.all([apiSimulada.getFacturas(), apiSimulada.getFacturasGenerales()])
+      const merged: (Factura | FacturaGeneral)[] = [...facturasCursos, ...facturasGenerales]
+      setFacturas(merged)
       setLoading(false)
     }
     load()

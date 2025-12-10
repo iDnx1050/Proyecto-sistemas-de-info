@@ -108,13 +108,13 @@ const store = {
   inventario: [
     { sku: "SKU-BOTI", nombre: "Botiquin basico", stock: 25, stockMin: 5, updatedAtISO: new Date().toISOString() },
     { sku: "SKU-GUANTES", nombre: "Guantes nitrilo talla M", stock: 100, stockMin: 20, updatedAtISO: new Date().toISOString() },
-    { sku: "SKU-CHALECO", nombre: "Chaleco reflectante", stock: 40, stockMin: 10, updatedAtISO: new Date().toISOString() },
+    { sku: "SKU-CHALECO", nombre: "Chaleco reflectante", stock: 40, stockMin: 10, talla: "M", color: "Amarillo", updatedAtISO: new Date().toISOString() },
     { sku: "SKU-CONOS", nombre: "Cono de seguridad", stock: 30, stockMin: 8, updatedAtISO: new Date().toISOString() },
     { sku: "SKU-LINTERNA", nombre: "Linterna LED recargable", stock: 12, stockMin: 4, updatedAtISO: new Date().toISOString() },
     { sku: "SKU-MEGA", nombre: "Megafono 30W", stock: 4, stockMin: 2, updatedAtISO: new Date().toISOString() },
     { sku: "SKU-CARPA", nombre: "Carpa plegable 3x3", stock: 3, stockMin: 1, updatedAtISO: new Date().toISOString() },
     { sku: "SKU-MESA", nombre: "Mesa plegable plastica", stock: 6, stockMin: 2, updatedAtISO: new Date().toISOString() },
-    { sku: "SKU-SILLA", nombre: "Silla plegable", stock: 60, stockMin: 20, updatedAtISO: new Date().toISOString() },
+    { sku: "SKU-SILLA", nombre: "Silla plegable", stock: 60, stockMin: 20, color: "Negro", updatedAtISO: new Date().toISOString() },
   ] as Inventario[],
   movimientos: [
     {
